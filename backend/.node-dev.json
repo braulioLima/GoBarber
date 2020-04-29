@@ -1,0 +1,7 @@
+{
+  "clear": true,
+  "ignore": [
+    "node_modules"
+  ],
+  "notify": false
+}

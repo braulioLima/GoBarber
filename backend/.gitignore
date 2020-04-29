@@ -1,0 +1,12 @@
+# Misc IDE's
+.idea/
+.vscode/
+
+# Misc
+node_modules
+dist
+yarn-*
+
+# File upload
+tmp/*
+!tmp/.gitkeep
