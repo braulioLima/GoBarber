@@ -2,11 +2,11 @@ import { getRepository } from 'typeorm';
 import { join } from 'path';
 import { access, promises } from 'fs';
 
-import uploadConfig from '../config/upload';
+import uploadConfig from '@config/upload';
 
-import AppError from '../errors/AppError';
+import AppError from '@shared/errors/AppError';
 
-import User from '../models/User';
+import User from '../infra/typeorm/entities/User';
 
 interface RequestAtavarFileDTO {
   user_id: string;
