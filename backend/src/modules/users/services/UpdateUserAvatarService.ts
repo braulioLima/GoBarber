@@ -1,8 +1,4 @@
-import { join } from 'path';
-import { access, promises } from 'fs';
 import { inject, injectable } from 'tsyringe';
-
-import uploadConfig from '@config/upload';
 
 import AppError from '@shared/errors/AppError';
 
