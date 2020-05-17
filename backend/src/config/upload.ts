@@ -5,7 +5,9 @@ import { diskStorage } from 'multer';
 const tmpFolder = resolve(__dirname, '..', '..', 'tmp');
 
 export default {
-  directory: tmpFolder,
+  tmpFolder,
+  uploadsFolder: resolve(tmpFolder, 'uploads'),
+
   storage: diskStorage({
     destination: tmpFolder,
     filename(request, file, callback) {

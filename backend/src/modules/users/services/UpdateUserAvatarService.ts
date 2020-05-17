@@ -6,6 +6,7 @@ import uploadConfig from '@config/upload';
 
 import AppError from '@shared/errors/AppError';
 
+import IStorageProvider from '@shared/container/providers/StorageProviders/models/IStorageProvider';
 import User from '../infra/typeorm/entities/User';
 
 import IUsersRepository from '../repositories/IUsersRepository';
@@ -19,11 +20,17 @@ interface IRequestAtavarFileDTO {
 class UpdateUserAvatarService {
   private usersRepository: IUsersRepository;
 
+  private storageProvider: IStorageProvider;
+
   constructor(
     @inject('UsersRepository')
     usersRepository: IUsersRepository,
+
+    @inject('StorageProvider')
+    storageProvider: IStorageProvider,
   ) {
     this.usersRepository = usersRepository;
+    this.storageProvider = storageProvider;
   }
 
   public async execute({
@@ -37,16 +44,12 @@ class UpdateUserAvatarService {
     }
 
     if (user.avatar) {
-      const userAvatarFilePath = join(uploadConfig.directory, user.avatar);
-
-      await access(userAvatarFilePath, async error => {
-        if (!error) {
-          await promises.unlink(userAvatarFilePath);
-        }
-      });
+      await this.storageProvider.deleteFile(user.avatar);
     }
 
-    user.avatar = avatarFilename;
+    const filename = await this.storageProvider.saveFile(avatarFilename);
+
+    user.avatar = filename;
 
     await this.usersRepository.update(user);
 
