@@ -5,7 +5,7 @@ import authConfig from '@config/auth';
 
 import AppError from '@shared/errors/AppError';
 
-interface TokenPayload {
+interface ITokenPayload {
   iat: number;
   exp: number;
   sub: string;
@@ -29,7 +29,7 @@ function ensureAuthenticated(
   try {
     const decoded = verify(token, secret);
 
-    const { sub: userId } = decoded as TokenPayload;
+    const { sub: userId } = decoded as ITokenPayload;
 
     request.user = {
       id: userId,
