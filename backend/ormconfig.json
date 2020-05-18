@@ -12,7 +12,7 @@
     "./src/shared/infra/typeorm/migrations/*.ts"
   ],
   "cli": {
-    "entitiesDir": "./src/modules/**/infra/typeorm/entities/*.ts",
-    "migrationsDir": "./src/shared/infra/typeorm/migrations/*.ts"
+    "entitiesDir": "./src/modules/**/infra/typeorm/entities/",
+    "migrationsDir": "./src/shared/infra/typeorm/migrations/"
   }
 }

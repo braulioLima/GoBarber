@@ -3,13 +3,15 @@ import { container } from 'tsyringe';
 import IStorageProvider from './StorageProviders/models/IStorageProvider';
 import DiskStorageProvider from './StorageProviders/implementations/DiskStorageProvider';
 
-// import IMailProvider from '../providers/MailProvider/models/IMailProvider';
+import IMailProvider from './MailProvider/models/IMailProvider';
+import EtherealMailProvider from './MailProvider/implementations/EtherealMailProvider';
 
 container.registerSingleton<IStorageProvider>(
   'StorageProvider',
   DiskStorageProvider,
 );
 
-// container.registerSingleton<IMailProvider>(
-//   'ProviderMail'
+container.registerInstance<IMailProvider>(
+  'MailProvider',
+  new EtherealMailProvider(),
 );
