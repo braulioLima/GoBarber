@@ -1,15 +1,16 @@
 # Misc IDE's
 .idea/
 .vscode/
+.history
 
 # Misc
 node_modules
 dist
+.env
+ormconfig.json
 yarn-*
 
 # File upload
 tmp/*
 !tmp/.gitkeep
 
-# Misc
-.history

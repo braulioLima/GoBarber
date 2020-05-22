@@ -19,7 +19,7 @@ class AppointmentsController {
       date: parsedDate,
     });
 
-    return response.json(appointment);
+    return response.status(201).json(appointment);
   }
 }
 
