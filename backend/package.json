@@ -8,8 +8,8 @@
     "dev:server": "ts-node-dev -r tsconfig-paths/register --inspect --transpile-only src/shared/infra/http/server.ts",
     "resetDB": "yarn typeorm schema:drop && yarn typeorm migration:run",
     "start": "ts-node src/shared/infra/http/server.ts",
-    "docker-stop": "for db in gobarberDB mongodb; do docker stop $db; done",
-    "docker-start": "for db in gobarberDB mongodb; do docker start $db; done",
+    "docker-stop": "for db in gobarberDB mongodb redis; do docker stop $db; done",
+    "docker-start": "for db in gobarberDB mongodb redis; do docker start $db; done",
     "docker-restart": "yarn docker-stop && yarn docker-start",
     "typeorm": "ts-node-dev -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
     "test": "jest"
