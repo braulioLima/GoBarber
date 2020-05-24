@@ -29,7 +29,7 @@
       "prettier/prettier": "error",
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { "argsIgnorePattern": "next"}
+        { "argsIgnorePattern": "_"}
       ],
       "@typescript-eslint/interface-name-prefix": ["error", {
         "prefixWithI": "always"

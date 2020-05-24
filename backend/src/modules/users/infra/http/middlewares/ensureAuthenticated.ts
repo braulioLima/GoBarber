@@ -27,7 +27,7 @@ function ensureAuthenticated(
   const { secret } = authConfig.jwt;
 
   try {
-    const decoded = verify(token, secret);
+    const decoded = verify(token, secret || '');
 
     const { sub: userId } = decoded as ITokenPayload;
 

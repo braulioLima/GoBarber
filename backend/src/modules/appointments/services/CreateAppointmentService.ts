@@ -3,6 +3,7 @@ import { inject, injectable } from 'tsyringe';
 
 import AppError from '@shared/errors/AppError';
 
+import ICacheProvider from '@shared/container/providers/CacheProvider/models/ICacheProvider';
 import INotificationsRepository from '@modules/notifications/repositories/INotificationsRepository';
 
 import Appointment from '../infra/typeorm/entities/Appointment';
@@ -18,17 +19,23 @@ interface IRequestDTO {
 class CreateAppointmentService {
   private appointmentsRepository: IAppointmentsRepository;
 
+  private cacheProvider: ICacheProvider;
+
   private notificationsRepository: INotificationsRepository;
 
   constructor(
     @inject('AppointmentsRepository')
     appointmentsRepository: IAppointmentsRepository,
 
+    @inject('CacheProvider')
+    cacheProvider: ICacheProvider,
+
     @inject('NotificationsRepository')
     notificationsRepository: INotificationsRepository,
   ) {
     this.appointmentsRepository = appointmentsRepository;
     this.notificationsRepository = notificationsRepository;
+    this.cacheProvider = cacheProvider;
   }
 
   public async run({
@@ -69,10 +76,19 @@ class CreateAppointmentService {
     const dateFormated = format(appointmentDate, "dd/MM/yyyy 'às' HH:mm'h");
     const content = `Novo agendamento para o dia ${dateFormated}`;
 
-    await this.notificationsRepository.create({
+    const notificationsPromise = this.notificationsRepository.create({
       recipient_id: provider_id,
       content,
     });
+
+    const cacheKey = `provider-appointments:${provider_id}:${format(
+      appointmentDate,
+      'yyyy-M-d',
+    )}`;
+
+    const cachePromise = this.cacheProvider.invalidate(cacheKey);
+
+    await Promise.all([notificationsPromise, cachePromise]);
 
     return appointment;
   }
