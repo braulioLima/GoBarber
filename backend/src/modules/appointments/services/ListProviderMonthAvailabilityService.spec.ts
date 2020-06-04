@@ -1,3 +1,4 @@
+import { getHours, getDate, getDaysInMonth, setHours } from 'date-fns';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import ListProviderMonthAvailabilityService from './ListProviderMonthAvailabilityService';
 
@@ -12,85 +13,12 @@ describe('ListProviderMonthAvailability', () => {
     );
   });
 
-  it('should be able to list the month availability from provider', async () => {
-    // const hours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17];
+  it('should be able to list past days in current month with false', async () => {
+    const hourNow = getHours(Date.now()) - 3;
+    const today = setHours(new Date(Date.now()), hourNow);
+    const day = getDate(today);
 
-    await fakeAppointmentsRepository.create({
-      date: new Date(2020, 3, 20, 8, 0, 0),
-      provider_id: 'user',
-      user_id: '',
-    });
-
-    // Start dia fechado
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 8, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 9, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 10, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 11, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 12, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 13, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 14, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 15, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 16, 0, 0),
-    });
-
-    await fakeAppointmentsRepository.create({
-      provider_id: 'user',
-      user_id: '',
-      date: new Date(2020, 4, 20, 17, 0, 0),
-    });
-
-    // Stop dia fechado
-
-    await fakeAppointmentsRepository.create({
-      date: new Date(2020, 4, 21, 8, 0, 0),
-      user_id: '',
-      provider_id: 'user',
-    });
-
+    // console.log(today);
     const availability = await listProviderMonthAvailability.execute({
       provider_id: 'user',
       year: 2020,
@@ -99,10 +27,42 @@ describe('ListProviderMonthAvailability', () => {
 
     expect(availability).toEqual(
       expect.arrayContaining([
-        { day: 19, available: true },
-        { day: 20, available: false },
-        { day: 21, available: true },
+        { day: 1, available: day === 1 },
+        { day: 15, available: day <= 15 },
+        { day: 21, available: day <= 21 },
       ]),
     );
+  });
+
+  it('should be able to list all days in the month with available false if year or month in the past', async () => {
+    // Test past month
+    let numberOfDaysInMonth = getDaysInMonth(new Date(2020, 3));
+    let availabilityResponse = Array.from(
+      { length: numberOfDaysInMonth },
+      (_, index) => ({ day: index + 1, available: false }),
+    );
+
+    let availability = await listProviderMonthAvailability.execute({
+      provider_id: 'user',
+      year: 2020,
+      month: 4,
+    });
+
+    expect(availability).toEqual(availabilityResponse);
+
+    //  Test past year
+    numberOfDaysInMonth = getDaysInMonth(new Date(2019, 3));
+    availabilityResponse = Array.from(
+      { length: numberOfDaysInMonth },
+      (_, index) => ({ day: index + 1, available: false }),
+    );
+
+    availability = await listProviderMonthAvailability.execute({
+      provider_id: 'user',
+      year: 2019,
+      month: 4,
+    });
+
+    expect(availability).toEqual(availabilityResponse);
   });
 });
