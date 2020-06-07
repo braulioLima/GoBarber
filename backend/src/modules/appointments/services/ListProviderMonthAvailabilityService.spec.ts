@@ -1,4 +1,12 @@
-import { getHours, getDate, getDaysInMonth, setHours } from 'date-fns';
+import {
+  getHours,
+  getDate,
+  getDaysInMonth,
+  setHours,
+  setMonth,
+  getMonth,
+  getYear,
+} from 'date-fns';
 import FakeAppointmentsRepository from '../repositories/fakes/FakeAppointmentsRepository';
 import ListProviderMonthAvailabilityService from './ListProviderMonthAvailabilityService';
 
@@ -10,6 +18,38 @@ describe('ListProviderMonthAvailability', () => {
     fakeAppointmentsRepository = new FakeAppointmentsRepository();
     listProviderMonthAvailability = new ListProviderMonthAvailabilityService(
       fakeAppointmentsRepository,
+    );
+  });
+
+  it('should be able to list appointments in day', async () => {
+    await fakeAppointmentsRepository.create({
+      provider_id: 'provider_id',
+      user_id: 'user_id',
+      date: new Date(2020, 5, 8, 8, 0, 0),
+    });
+
+    const test = await fakeAppointmentsRepository.create({
+      provider_id: 'provider_id',
+      user_id: 'user_id',
+      date: new Date(2020, 5, 8, 9, 0, 0),
+    });
+
+    jest.spyOn(Date, 'now').mockImplementation(() => {
+      return new Date(2020, 5, 8, 7, 0, 0).getTime();
+    });
+
+    const availability = await listProviderMonthAvailability.execute({
+      provider_id: 'user',
+      year: 2020,
+      month: 6,
+    });
+
+    expect(availability).toEqual(
+      expect.arrayContaining([
+        { day: 1, available: false },
+        { day: 8, available: true },
+        { day: 21, available: true },
+      ]),
     );
   });
 
@@ -27,9 +67,9 @@ describe('ListProviderMonthAvailability', () => {
 
     expect(availability).toEqual(
       expect.arrayContaining([
-        { day: 1, available: day === 1 },
-        { day: 15, available: day <= 15 },
-        { day: 21, available: day <= 21 },
+        { day: 1, available: false },
+        { day: 15, available: false },
+        { day: 21, available: false },
       ]),
     );
   });
